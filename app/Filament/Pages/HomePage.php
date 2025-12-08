@@ -29,12 +29,12 @@ class HomePage extends Page implements HasForms
 
     public function mount(): void
     {
-        // гарантируем, что запись существует
         $record = Home::first() ?? Home::create();
         $record->load('description');
 
-        // Заполняем форму данными из description
         if ($record->description) {
+            // Заполняем форму данными из description
+            // statePath('data') означает, что данные будут в $this->data
             $this->form->fill($record->description->only([
                 'title_1', 'title_2',
                 'meta_description_1', 'meta_description_2',
@@ -50,82 +50,61 @@ class HomePage extends Page implements HasForms
             ->schema([
                 Section::make('Описание')
                     ->schema([
-                        Tabs::make('descTabs')->tabs([
-                            Tabs\Tab::make('1')->schema([
-                                TextInput::make('title_1')
-                                    ->label('Название 1')
-                                    ->required()
-                                    ->maxLength(255),
+                        Tabs::make('descTabs')
+                            ->contained(false)
+                            ->persistTabInQueryString()
+                            ->tabs([
+                                Tabs\Tab::make('1')->schema([
+                                    TextInput::make('title_1')
+                                        ->label('Название 1')
+                                        ->required()
+                                        ->maxLength(255),
 
-                                TextInput::make('meta_description_1')
-                                    ->label('Meta description 1')
-                                    ->maxLength(255),
+                                    TextInput::make('meta_description_1')
+                                        ->label('Meta description 1')
+                                        ->maxLength(255),
 
-                                RichEditor::make('block_1_1')
-                                    ->label('Блок 1')
-                                    ->toolbarButtons([
-                                        'bold', 'italic', 'strike',
-                                        'link', 'orderedList', 'bulletList',
-                                        'blockquote', 'codeBlock',
-                                        'h2', 'h3', 'hr', 'undo', 'redo',
-                                    ])
-                                    ->columnSpanFull(),
+                                    RichEditor::make('block_1_1')
+                                        ->label('Блок 1')
+                                        ->columnSpanFull(),
 
-                                RichEditor::make('block_2_1')
-                                    ->label('Блок 2')
-                                    ->toolbarButtons([
-                                        'bold', 'italic', 'strike',
-                                        'link', 'orderedList', 'bulletList',
-                                        'blockquote', 'codeBlock',
-                                        'h2', 'h3', 'hr', 'undo', 'redo',
-                                    ])
-                                    ->columnSpanFull(),
-                            ]),
-                            Tabs\Tab::make('2')->schema([
-                                TextInput::make('title_2')
-                                    ->label('Название 2')
-                                    ->maxLength(255),
+                                    RichEditor::make('block_2_1')
+                                        ->label('Блок 2')
+                                        ->columnSpanFull(),
+                                ]),
+                                Tabs\Tab::make('2')->schema([
+                                    TextInput::make('title_2')
+                                        ->label('Название 2')
+                                        ->maxLength(255),
 
-                                TextInput::make('meta_description_2')
-                                    ->label('Meta description 2')
-                                    ->maxLength(255),
+                                    TextInput::make('meta_description_2')
+                                        ->label('Meta description 2')
+                                        ->maxLength(255),
 
-                                RichEditor::make('block_1_2')
-                                    ->label('Блок 1')
-                                    ->toolbarButtons([
-                                        'bold', 'italic', 'strike',
-                                        'link', 'orderedList', 'bulletList',
-                                        'blockquote', 'codeBlock',
-                                        'h2', 'h3', 'hr', 'undo', 'redo',
-                                    ])
-                                    ->columnSpanFull(),
+                                    RichEditor::make('block_1_2')
+                                        ->label('Блок 1')
+                                        ->columnSpanFull(),
 
-                                RichEditor::make('block_2_2')
-                                    ->label('Блок 2')
-                                    ->toolbarButtons([
-                                        'bold', 'italic', 'strike',
-                                        'link', 'orderedList', 'bulletList',
-                                        'blockquote', 'codeBlock',
-                                        'h2', 'h3', 'hr', 'undo', 'redo',
-                                    ])
-                                    ->columnSpanFull(),
-                            ]),
-                        ])->columnSpanFull(),
+                                    RichEditor::make('block_2_2')
+                                        ->label('Блок 2')
+                                        ->columnSpanFull(),
+                                ]),
+                            ])
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ])
             ->statePath('data');
     }
 
+
     public function save(): void
     {
         $record = Home::first() ?? new Home();
         $record->save();
 
-        // Получаем данные формы
         $data = $this->form->getState();
-        
-        // Сохраняем description
+
         $record->description()->updateOrCreate(
             ['home_id' => $record->id],
             $data
