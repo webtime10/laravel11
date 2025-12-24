@@ -59,6 +59,50 @@ class Block1Resource extends Resource
                     ->disk('public')
                     ->directory('block1')
                     ->required(false),
+
+                // Описание (hasOne) - многоязычные title и description
+                Forms\Components\Section::make('Многоязычное описание')
+                    ->relationship('description')
+                    ->schema([
+                        Forms\Components\Tabs::make('descLangTabs')->tabs([
+                            Forms\Components\Tabs\Tab::make('Язык 1')->schema([
+                                Forms\Components\TextInput::make('title_1')
+                                    ->label('Заголовок 1')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\RichEditor::make('description_1')
+                                    ->label('Описание 1')
+                                    ->toolbarButtons([
+                                        'bold', 'italic', 'underline', 'strike',
+                                        'link', 'blockquote', 'codeBlock',
+                                        'h2', 'h3',
+                                        'orderedList', 'bulletList',
+                                        'undo', 'redo',
+                                    ])
+                                    ->fileAttachmentsDisk('public')
+                                    ->fileAttachmentsDirectory('block1/inline')
+                                    ->columnSpanFull(),
+                            ]),
+                            Forms\Components\Tabs\Tab::make('Язык 2')->schema([
+                                Forms\Components\TextInput::make('title_2')
+                                    ->label('Заголовок 2')
+                                    ->maxLength(255),
+                                Forms\Components\RichEditor::make('description_2')
+                                    ->label('Описание 2')
+                                    ->toolbarButtons([
+                                        'bold', 'italic', 'underline', 'strike',
+                                        'link', 'blockquote', 'codeBlock',
+                                        'h2', 'h3',
+                                        'orderedList', 'bulletList',
+                                        'undo', 'redo',
+                                    ])
+                                    ->fileAttachmentsDisk('public')
+                                    ->fileAttachmentsDirectory('block1/inline')
+                                    ->columnSpanFull(),
+                            ]),
+                        ])->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 

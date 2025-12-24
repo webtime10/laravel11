@@ -1,19 +1,31 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Home; // ← ВАЖНО: импорт компонента
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BlogController;
+use App\Helper\Langs;
 
-use App\Livewire\BlogIndex;
-use App\Livewire\BlogShow;
+Route::get('/lang/{lang}', function ($lang) {
+    if (!in_array($lang, Langs::LOCALES)){
+abort(404);
+    }
+
+    App::setLocale($lang);
+    $uri = Langs::getUri($lang);
+    return redirect($uri);
+
+})->name('setlang');
+
+
 
 // редирект на логин Filament
 Route::get('/login', fn () => redirect()->route('filament.admin.auth.login'))
     ->name('login');
 
-// главная страница
-Route::get('/', Home::class)->name('home');
-// (альтернатива без use: Route::get('/', \App\Livewire\Home::class)->name('home');)
 
+Route::prefix(App\Helper\Langs::getLocale())->middleware('langs')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+    Route::get('/blog/{post}', [BlogController::class, 'show'])->name('blog.show');
+});
 
-Route::get('/blog', BlogIndex::class)->name('blog.index');
-Route::get('/blog/{post}', BlogShow::class)->name('blog.show'); // {post} = id записи Block1

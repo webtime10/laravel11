@@ -12,6 +12,7 @@ $app->withRouting(
     health: '/up',
 );
 
+
 $app->withMiddleware(function (Middleware $middleware): void {
     // web-стек
     $middleware->web(append: [
@@ -22,6 +23,7 @@ $app->withMiddleware(function (Middleware $middleware): void {
     // алиасы
     $middleware->alias([
         'auth'  => \Illuminate\Auth\Middleware\Authenticate::class,
+        'langs' => \App\Http\Middleware\LangsMiddleware::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
     ]);
 });
